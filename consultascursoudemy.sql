@@ -149,9 +149,60 @@ select film_id from film_category where category_id in
 );
 
 
-select * from customer;
+select * from film_category;
 
 #EJERCICIO PARA ESTUDIANTE 68
-select CONCAT(first_name,' ',last_name)as 'FullName',email  from customer where 
+select CONCAT(first_name,' ',last_name)as 'FullName',email  from customer where customer_id in 
 (
-select 
+select customer_id from rental where rental_id in
+	(
+    select rental_id from inventory where film_id in
+		(
+        select film_id from film_category where category_id = 1
+        )
+	)
+);
+
+
+#CREATE VIEW
+create view ingresos_por_genero as
+select name,sum(amount) from category
+inner join film_category on category.category_id = film_category.category_id
+inner join inventory on film_category.film_id = inventory.film_id
+inner join rental on inventory.inventory_id = rental.inventory_id
+inner join payment on rental.rental_id = payment.rental_id
+group by name
+order by sum(amount) desc limit 5;
+
+select * from ingresos_por_genero;
+
+#EJERCICIO 70
+
+select * from customer;
+
+create view lista_de_clientes as
+select concat(first_name,' ',last_name),a.address,ci.city,co.country from customer c
+inner join address a on c.address_id = a.address_id
+inner join city ci on a.city_id = ci.city_id
+inner join country co on ci.country_id = co.country_id;
+
+select * from lista_de_clientes;
+
+drop view lista_de_clientes;
+
+
+##PREGUNTAS COMPLEJAS
+#QUIEN VENDIO MAS EN AGOSTO 2005?
+
+select s.first_name,s.last_name,sum(p.amount) as 'TOTAL DE VENTAS' from staff s
+inner join payment p on s.staff_id = p.staff_id and p.payment_date like '2005-08%';
+
+select f.title,count(fa.actor_id) as 'CONTADOR ACTORES' from film f
+inner join film_actor fa on f.film_id = fa.film_id
+group by(f.title);
+
+select title,length as 'Cantidad' from film where title = 'Hunchback impossible';
+
+select * from inventory;
+
+
