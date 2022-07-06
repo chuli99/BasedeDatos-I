@@ -204,5 +204,3 @@ group by(f.title);
 select title,length as 'Cantidad' from film where title = 'Hunchback impossible';
 
 select * from inventory;
-
-
